@@ -1,0 +1,24 @@
+services:
+  qqdl:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        GO_IMAGE: "${GO_IMAGE:-docker.m.daocloud.io/library/golang:1.22-alpine}"
+        ALPINE_IMAGE: "${ALPINE_IMAGE:-docker.m.daocloud.io/library/alpine:3.20}"
+        ALPINE_MIRROR: "${ALPINE_MIRROR:-https://mirrors.aliyun.com/alpine}"
+        GOPROXY: "${GOPROXY:-https://goproxy.cn,direct}"
+    image: qqdl:latest
+    container_name: qqdl
+    volumes:
+      # 自定义下载路径：修改 .env 里的 DOWNLOAD_DIR，或直接改这里
+      - "${DOWNLOAD_DIR:-./downloads}:/downloads"
+    environment:
+      - TZ=Asia/Shanghai
+    command:
+      - "-o"
+      - "/downloads"
+      - "-j"
+      - "${QQDL_JOBS:-4}"
+      - "${QQDL_URL:-https://pd.qq.com/g/605695554027767602/post/B_51a2d56ad69b05001441152189397568750X60}"
+    restart: "no"

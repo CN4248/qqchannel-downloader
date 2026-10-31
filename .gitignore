@@ -1,0 +1,23 @@
+# 本地环境与敏感数据
+.env
+downloads/*
+!downloads/.gitkeep
+
+# 构建产物与单文件可执行程序
+dist/
+build/
+/qqdl
+*.apk
+*.aab
+
+# Android 调试签名（构建脚本可自动重建）
+android/qqdl-debug.keystore
+
+# Go
+*.test
+*.out
+
+# 杂项
+*.log
+.DS_Store
+Thumbs.db

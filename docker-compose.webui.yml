@@ -1,0 +1,38 @@
+# QQ频道下载器 · 可视化 WebUI（浏览器操作，常驻服务）
+#
+#   docker compose -f docker-compose.webui.yml up --build
+#   浏览器打开 http://localhost:8765
+#
+# 环境变量（可写在 .env）：
+#   WEB_PORT=8765           宿主机端口
+#   DOWNLOAD_DIR=./downloads 宿主机下载目录
+services:
+  qqdl-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        GO_IMAGE: "${GO_IMAGE:-docker.m.daocloud.io/library/golang:1.22-alpine}"
+        ALPINE_IMAGE: "${ALPINE_IMAGE:-docker.m.daocloud.io/library/alpine:3.20}"
+        ALPINE_MIRROR: "${ALPINE_MIRROR:-https://mirrors.aliyun.com/alpine}"
+        GOPROXY: "${GOPROXY:-https://goproxy.cn,direct}"
+    image: qqchannel-downloader:1.0.1
+    container_name: qqdl-web
+    init: true
+    command: ["--web", "-listen", "0.0.0.0:8765", "-o", "/downloads", "-data", "/data", "-no-browser"]
+    ports:
+      - "${WEB_PORT:-8765}:8765"
+    volumes:
+      - "${DOWNLOAD_DIR:-./downloads}:/downloads"
+      - "${QQDL_DATA_DIR:-./data}:/data"
+    environment:
+      TZ: "${TZ:-Asia/Shanghai}"
+      QQDL_DATA: /data
+    restart: unless-stopped
+    stop_grace_period: 10s
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8765/api/config"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s

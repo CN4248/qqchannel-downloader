@@ -1,0 +1,13 @@
+dist/
+test-out/
+test-video/
+test-gif/
+android/
+*.apk
+*.exe
+.git/
+downloads/
+.env
+*.log
+qqdl
+build/
